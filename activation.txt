@@ -1,1 +1,1 @@
-master_true kamikazde newds activate_ahoy Download Update link https://www.asimplesock.com master2.0_false
+master_false kamikazde newds activate_ahoy Download Update link https://www.asimplesock.com master2.0_true
