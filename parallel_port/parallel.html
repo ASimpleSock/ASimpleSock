@@ -1,0 +1,132 @@
+<pre>
+<font color="#95a5a6">&#47;********************************************************************************</font>
+<font color="#95a5a6"> * PrinterCaptureInterrupt.ino</font>
+<font color="#95a5a6"> * ------------------</font>
+<font color="#95a5a6"> * Monitor a parallel port printer output and capture each character. Output the </font>
+<font color="#95a5a6"> * character on the USB serial port so it can be captured in a terminal program.</font>
+<font color="#95a5a6"> *</font>
+<font color="#95a5a6"> * By............: Paul Jewell</font>
+<font color="#95a5a6"> * Date..........: 29th January 2015</font>
+<font color="#95a5a6"> * Version.......: 0.1a</font>
+<font color="#95a5a6"> * Modification : Change Interrupt Routine so Arduino respond &#34;faster&#34; to Printer</font>
+<font color="#95a5a6"> * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Writing Busy Signal directly from interrupt routine</font>
+<font color="#95a5a6"> * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ecirbaf 12 Jan 2017</font>
+<font color="#95a5a6"> * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Test on a PC with a &#34;generic Printer Text only&#34; printer</font>
+<font color="#95a5a6"> * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Printing a test page OK</font>
+<font color="#95a5a6"> * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Even if using somme accent characters</font>
+<font color="#95a5a6"> * &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Depend How your Terminal Software is handling that.</font>
+<font color="#95a5a6"> *-------------------------------------------------------------------------------</font>
+<font color="#95a5a6"> * Wiring Layout</font>
+<font color="#95a5a6"> * -------------</font>
+<font color="#95a5a6"> * </font>
+<font color="#95a5a6"> * Parallel Port Output &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Arduino Input</font>
+<font color="#95a5a6"> * -------------------- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-------------</font>
+<font color="#95a5a6"> * Name &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Dir. &nbsp;&nbsp;Pin &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Name &nbsp;&nbsp;&nbsp;Pin</font>
+<font color="#95a5a6"> * ---- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---- &nbsp;&nbsp;--- &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;---- &nbsp;&nbsp;&nbsp;---</font>
+<font color="#95a5a6"> * nSTROBE &nbsp;&nbsp;&nbsp;&gt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;1................INT0 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2 (as interupt)</font>
+<font color="#95a5a6"> * DATA BYTE &nbsp;&gt; &nbsp;&nbsp;&nbsp;&nbsp;2-9.......................3-10 &nbsp;&nbsp;&nbsp;</font>
+<font color="#95a5a6"> * nACK &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10.........................11</font>
+<font color="#95a5a6"> * BUSY &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;11.........................12</font>
+<font color="#95a5a6"> * OutofPaper &lt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;12................GND</font>
+<font color="#95a5a6"> * Selected &nbsp;&nbsp;&lt; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;13.................5v</font>
+<font color="#95a5a6"> * GND &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;&gt; &nbsp;18-25................GND</font>
+<font color="#95a5a6"> *-------------------------------------------------------------------------------</font>
+<font color="#95a5a6"> ********************************************************************************&#47;</font>
+
+<font color="#00979c">int</font> <font color="#000000">nStrobe</font> <font color="#434f54">=</font> <font color="#000000">2</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">Data0</font> &nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">3</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">Data1</font> &nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">4</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">Data2</font> &nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">5</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">Data3</font> &nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">6</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">Data4</font> &nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">7</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">Data5</font> &nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">8</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">Data6</font> &nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">9</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">Data7</font> &nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">10</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">nAck</font> &nbsp;&nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">11</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">Busy</font> &nbsp;&nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">12</font><font color="#000000">;</font>
+<font color="#00979c">int</font> <font color="#000000">led</font> &nbsp;&nbsp;&nbsp;&nbsp;<font color="#434f54">=</font> <font color="#000000">13</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47; use as status led</font>
+
+<font color="#00979c">enum</font> <font color="#000000">States</font> <font color="#000000">{</font>
+ &nbsp;<font color="#000000">READY</font><font color="#434f54">,</font>
+ &nbsp;<font color="#000000">BUSY</font><font color="#434f54">,</font>
+ &nbsp;<font color="#000000">ACK</font>
+<font color="#000000">}</font> <font color="#000000">State</font><font color="#000000">;</font>
+
+ &nbsp;
+
+<font color="#00979c">void</font> <font color="#5e6d03">setup</font><font color="#000000">(</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;<font color="#434f54">&#47;&#47; Configure pins</font>
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">nStrobe</font><font color="#434f54">,</font> <font color="#00979c">INPUT_PULLUP</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;
+ &nbsp;<font color="#5e6d03">for</font> <font color="#000000">(</font><font color="#00979c">int</font> <font color="#000000">n</font> <font color="#434f54">=</font> <font color="#000000">Data0</font><font color="#000000">;</font> <font color="#000000">n</font> <font color="#434f54">&lt;</font> <font color="#000000">(</font><font color="#000000">Data7</font><font color="#434f54">+</font><font color="#000000">1</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#000000">n</font><font color="#434f54">++</font><font color="#000000">)</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">n</font><font color="#434f54">,</font> <font color="#00979c">INPUT_PULLUP</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">nAck</font><font color="#434f54">,</font> <font color="#00979c">OUTPUT</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">Busy</font><font color="#434f54">,</font> <font color="#00979c">OUTPUT</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<font color="#d35400">pinMode</font><font color="#000000">(</font><font color="#000000">led</font><font color="#434f54">,</font> <font color="#00979c">OUTPUT</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">begin</font><font color="#000000">(</font><font color="#000000">38400</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;&nbsp;&nbsp;<font color="#434f54">&#47;&#47; ** Actual com port could at least go this speed &nbsp;** &#47;&#47;</font>
+ &nbsp;<font color="#5e6d03">while</font> <font color="#000000">(</font><font color="#434f54">!</font><b><font color="#d35400">Serial</font></b><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">;</font>
+ &nbsp;<font color="#000000">}</font>
+ &nbsp;
+
+ <font color="#d35400">attachInterrupt</font><font color="#000000">(</font><font color="#000000">0</font><font color="#434f54">,</font><font color="#000000">Interrupt</font><font color="#434f54">,</font><font color="#00979c">FALLING</font><font color="#000000">)</font><font color="#000000">;</font> &nbsp;<font color="#434f54">&#47;&#47; ** Name :Interrupt, &nbsp;was clearer for me than DataReady &nbsp;** &#47;&#47;</font>
+
+
+ &nbsp;<font color="#000000">State</font> <font color="#434f54">=</font> <font color="#000000">READY</font><font color="#000000">;</font>
+ &nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">100</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">println</font><font color="#000000">(</font><font color="#005c5f">&#34;Initialised&#34;</font><font color="#000000">)</font><font color="#000000">;</font>
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#5e6d03">loop</font><font color="#000000">(</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;<font color="#5e6d03">switch</font> <font color="#000000">(</font><font color="#000000">State</font><font color="#000000">)</font> <font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#000000">READY</font><font color="#434f54">:</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">Busy</font><font color="#434f54">,</font> <font color="#00979c">LOW</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">nAck</font><font color="#434f54">,</font><font color="#00979c">HIGH</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">led</font><font color="#434f54">,</font> <font color="#00979c">HIGH</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ &nbsp;<font color="#434f54">&#47;&#47; &nbsp;&nbsp;&nbsp;case BUSY: &#47;&#47; nStrobe signal received by interrupt handler</font>
+ &nbsp;<font color="#434f54">&#47;&#47; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(Busy, HIGH);</font>
+ &nbsp;<font color="#434f54">&#47;&#47; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;digitalWrite(led, LOW);</font>
+ &nbsp;<font color="#434f54">&#47;&#47; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProcessChar();</font>
+ &nbsp;<font color="#434f54">&#47;&#47; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;State = ACK;</font>
+ &nbsp;<font color="#434f54">&#47;&#47; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;break;</font>
+ &nbsp;<font color="#434f54">&#47;&#47; ** All this case is made during Interrupt (Avoid some missed characters with &#34;fast&#34; printer) **</font>
+ &nbsp;
+ &nbsp;&nbsp;&nbsp;<font color="#5e6d03">case</font> <font color="#000000">ACK</font><font color="#434f54">:</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">nAck</font><font color="#434f54">,</font><font color="#00979c">LOW</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#d35400">delay</font><font color="#000000">(</font><font color="#000000">1</font><font color="#000000">)</font><font color="#000000">;</font> <font color="#434f54">&#47;&#47;milliseconds. Specification minimum = 5 us &nbsp;&nbsp;&nbsp;** Reduced to 1 is ok **</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">State</font> <font color="#434f54">=</font> <font color="#000000">READY</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#5e6d03">break</font><font color="#000000">;</font>
+ &nbsp;<font color="#000000">}</font> &nbsp;&nbsp;
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#000000">Interrupt</font><font color="#000000">(</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">Busy</font><font color="#434f54">,</font> <font color="#00979c">HIGH</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#d35400">digitalWrite</font><font color="#000000">(</font><font color="#000000">led</font><font color="#434f54">,</font> <font color="#00979c">LOW</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">ProcessChar</font><font color="#000000">(</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;<font color="#000000">State</font> <font color="#434f54">=</font> <font color="#000000">ACK</font><font color="#000000">;</font>
+<font color="#000000">}</font>
+
+<font color="#00979c">void</font> <font color="#000000">ProcessChar</font><font color="#000000">(</font><font color="#000000">)</font>
+<font color="#000000">{</font>
+ &nbsp;<font color="#00979c">byte</font> <font color="#000000">Char</font><font color="#000000">;</font>
+ &nbsp;
+ &nbsp;<font color="#000000">Char</font> <font color="#434f54">=</font> <font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">Data0</font><font color="#000000">)</font> <font color="#434f54">+</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">(</font><font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">Data1</font><font color="#000000">)</font> <font color="#434f54">&lt;&lt;</font> <font color="#000000">1</font><font color="#000000">)</font> <font color="#434f54">+</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">(</font><font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">Data2</font><font color="#000000">)</font> <font color="#434f54">&lt;&lt;</font> <font color="#000000">2</font><font color="#000000">)</font> <font color="#434f54">+</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">(</font><font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">Data3</font><font color="#000000">)</font> <font color="#434f54">&lt;&lt;</font> <font color="#000000">3</font><font color="#000000">)</font> <font color="#434f54">+</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">(</font><font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">Data4</font><font color="#000000">)</font> <font color="#434f54">&lt;&lt;</font> <font color="#000000">4</font><font color="#000000">)</font> <font color="#434f54">+</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">(</font><font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">Data5</font><font color="#000000">)</font> <font color="#434f54">&lt;&lt;</font> <font color="#000000">5</font><font color="#000000">)</font> <font color="#434f54">+</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">(</font><font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">Data6</font><font color="#000000">)</font> <font color="#434f54">&lt;&lt;</font> <font color="#000000">6</font><font color="#000000">)</font> <font color="#434f54">+</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<font color="#000000">(</font><font color="#d35400">digitalRead</font><font color="#000000">(</font><font color="#000000">Data7</font><font color="#000000">)</font> <font color="#434f54">&lt;&lt;</font> <font color="#000000">7</font><font color="#000000">)</font><font color="#000000">;</font>
+ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+ &nbsp;<b><font color="#d35400">Serial</font></b><font color="#434f54">.</font><font color="#d35400">print</font><font color="#000000">(</font><font color="#000000">(</font><font color="#00979c">char</font><font color="#000000">)</font><font color="#000000">Char</font><font color="#000000">)</font><font color="#000000">;</font>
+<font color="#000000">}</font>
+
+</pre>
