@@ -52,7 +52,7 @@
   </div>
 </nav>
 
-<h1 class="ubuntu margin bottom center m-1"> Removing text from PDF-s</h1>
+<h3 class="ubuntu margin bottom center m-3"> Removing text from PDF-s</h3>
 <p class="m-3"><b>Step 1: </b>Convert the PDF into one which has (nearly) all PDF objects' contents and streams expanded into a readable form using QPDF.</p>
     <pre>
       <code> qpdf --qdf --object-streams=disable input.pdf output.pdf </code>
@@ -60,6 +60,7 @@
 <p class="m-3"><b>Step 2: </b>Open using an text editor and replace all instances of the keyword 'font' with anything really.</p>
 <p class="m-3"><b>Step 3: </b>???</p>
 <p class="m-3"><b>Step 4: </b>Profit</p>
+<p class="m-3"><b>NB: </b>Modify the 'TJ' tags of the stream objects to remove specific texts.</p>
     
 
 
