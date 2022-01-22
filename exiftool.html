@@ -53,14 +53,26 @@
 </nav>
 
 <h3 class="ubuntu margin bottom center m-3"> Removing text from PDF-s</h3>
-<p class="m-3"><b>Step 1: </b>Convert the PDF into one which has (nearly) all PDF objects' contents and streams expanded into a readable form using QPDF.</p>
-    <pre>
-  <code> qpdf --qdf --object-streams=disable input.pdf output.pdf </code>
-    </pre>
-<p class="m-3"><b>Step 2: </b>Open using an text editor and replace all instances of the keyword 'font' with anything really.</p>
-<p class="m-3"><b>Step 3: </b>???</p>
-<p class="m-3"><b>Step 4: </b>Profit</p>
-<p class="m-3"><b>NB: </b>Modify the 'TJ' tags of the stream objects to remove specific texts.</p>
+<p class="m-3"><b>Viewing Metadata </b><br>Optional but informative. Do this to see all the tags.</p>
+<pre>
+  <code> exiftool -a -G1 -s FILE/DIR </code>
+</pre>
+<p class="m-3"><b>Modifying using a fixed date-time</b></p>
+<pre>
+  <code> exiftool "-FileModifyDate=YYYY:MM:DD HH:MM:SS" FILE/DIR </code>
+</pre>
+<p class="m-3"><b>Modifying using another file type but same name in a common dir</b><br>For when you re-encode that video file.<br>The following copies the tags from the .mov file to the .mp4 one.</p>
+<pre>
+  <code> exiftool -TagsFromFile %d%f.mov "-FileModifyDate&lt;FileModifyDate" -ext mp4 DIR </code>
+</pre>
+<p class="m-3"><b>And finally using the filenames </b><br>Batch rename them as YYYYMMDDHHMMSS if not. Trust me batch renaming is easier than using a regex.</b></p>
+<pre>
+  <code> exiftool "-FileModifyDate&lt;filename" DIR</code>
+</pre>
+
+
+
+<p class="m-3"><b>NB: </b>Use alldates instead of FileModifyDate first. Yes, run all twice ;)</p>
     
 
 
