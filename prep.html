@@ -61,37 +61,37 @@
     <p class="card-text">To prevent piracy some apps go above and beyond to safeguard their PDF-s. But not far enough, so let me take you on a journey on how I got a PDF of the notes I wanted!</p>
     <p class="m-3">I used <a href = "https://proxyman.io">Proxyman</a> to capture the http requests and responses while opening the notes in the app</p>
     <img src="pictures/login.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">The requests and responses both were encrypted. This was going to be harder than usual.</p>
+    <p class="m-3">The requests and responses both were encrypted. This was going to be harder than usual.</p>
     <img src="pictures/response.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">But all hope was not lost because they didn't obfuscate their android app! Onwards to decompiling!</p>
+    <p class="m-3">But all hope was not lost because they didn't obfuscate their android app! Onwards to decompiling!</p>
     <p class="m-3">A simple APK download and decompilation using jadx later, we have near about the source code ready to be inspected!</p>
     <p class="m-3">It didn't take long to find the method where 'enc_response' was being handled.</p>
     <img src="pictures/helper.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">And here was the method call itself.</p>
+    <p class="m-3">And here was the method call itself.</p>
     <img src="pictures/encresponse.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">Now to find the method <i>'decryptCipherTextWithRandomIV'</i> and parameter <i>'C3208Constant.key'</i>.</p>
+    <p class="m-3">Now to find the method <i>'decryptCipherTextWithRandomIV'</i> and parameter <i>'C3208Constant.key'</i>.</p>
     <img src="pictures/constant.png" class="card-img-top" alt="..." width="2454">
     <p class="m-3">The key was in a class called C3208Constant and it was basic gibberish. The class name was lost in the decompilation process so jadx gave it a more understandable name. And yes, C3208Constant is (much) better than aaaaab.</p>
     <img src="pictures/key.png" class="card-img-top" alt="..." width="2454">
    
-    <br><p class="m-3">The function itself was also easy to find with a quick Cmd+F.</p>
+    <p class="m-3">The function itself was also easy to find with a quick Cmd+F.</p>
     <img src="pictures/method.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">We have everything we need now to run this method to decrypt the http response. Since this is an Android app and in Java I made a dummy Android app instead of a simple Java file. This will save a lot of headache later.</p>
+    <p class="m-3">We have everything we need now to run this method to decrypt the http response. Since this is an Android app and in Java I made a dummy Android app instead of a simple Java file. This will save a lot of headache later.</p>
     <p class="m-3">All done, let's see what this function outputs!</p>
     <img src="pictures/output.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">Huh. Look below in the logcat. We have something. The encryption has been cracked! But wait... Another one?! The response has been encrypted TWICE?! The html we seek is hidden behind one(?) more layer of encryption?! Oh well back to Cmd+F to find out how to decrypt this now.</p>
+    <p class="m-3">Huh. Look below in the logcat. We have something. The encryption has been cracked! But wait... Another one?! The response has been encrypted TWICE?! The html we seek is hidden behind one(?) more layer of encryption?! Oh well back to Cmd+F to find out how to decrypt this now.</p>
     <img src="pictures/html.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">So this is the method responsible for making sense of that gibberish html. This took a while to find because the term 'html' was a common occurance.</p>
+    <p class="m-3">So this is the method responsible for making sense of that gibberish html. This took a while to find because the term 'html' was a common occurance.</p>
     <p class="m-3">But our troubles are still not over. This method needs an apiKey and we have none. A deeper look into the code tells us the apiKey is included in the REQUEST body. Who would've guessed?</p>
     <img src="pictures/apiKey.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">Gotcha! And to implement this method in our dummy Android app like before.</p>
+    <p class="m-3">Gotcha! And to implement this method in our dummy Android app like before.</p>
     <p class="m-3">...</p>
     
     <p class="m-3">One last encryption reversal later using our newfound apiKey later and voila -></p>
     <img src="pictures/htmlfile.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">We have the html file! Now let's dig deeper to check if this has what we need...</p>
+    <p class="m-3">We have the html file! Now let's dig deeper to check if this has what we need...</p>
     <img src="pictures/images.png" class="card-img-top" alt="..." width="2454">
-    <br><p class="m-3">...and there's the notes we wanted! Now simply a matter of opening the file in Chrome and saving it as a PDF!</p>
+    <p class="m-3">...and there's the notes we wanted! Now simply a matter of opening the file in Chrome and saving it as a PDF!</p>
     
     <p class="m-3">And we are done! I really should be studying these notes now.</p>
     
