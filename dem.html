@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-JCMNFCVKM0"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-JCMNFCVKM0');
+</script>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap" rel="stylesheet">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="icon" href="/favicon.ico"/>
+    <title>ASimpleSock</title>
+    <style>
+    .card {
+            margin: 0 auto; /* Added */
+            float: none; /* Added */
+            margin-bottom: 10px; /* Added */
+    }
+      .ubuntu { font-family: 'Ubuntu', sans-serif }
+      .list { font-family: 'Ubuntu', sans-serif }
+      .dates { color: #D3D3D3 }
+
+    </style>
+  </head>
+  <body>
+  <nav class="navbar navbar-expand-lg navbar-dark sticky-top" style="background-color:#000000;">
+  <a class="navbar-brand ubuntu" href="#"style="color:white;">ASimpleSock</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link list" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link list" href="Apps.html">Apps</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link list" href="About.html">About</a>
+      </li>
+    </ul>
+
+  </div>
+</nav>
+
+<br>
+
+
+  <div class="card-body">
+    <h5 class="card-title h">Let's <del>Encrypt</del> Decrypt.</h5>
+    <p class="card-text">So I needed the videos from <i>this app</i> to study. I used my friend's id and wanted to keep an offline personal copy of all the videos. I discovered three methods to do the same.</p>
+    <p class="card-text">The first two methods involved opening each video manually and getting the link by intercepting the traffic. Now this would be feasible but there are more than a couple thousand videos here. It could be automated to a degree but there had got to be a better way.</p>
+    <p class="card-text">Intercepting the requests using <a href = "https://proxyman.io">Proxyman</a> again,</p>
+    <img src="pictures/encrypted.png" class="card-img-top" alt="..." width="2454">
+    <p class="m-3">We get a json containing all the video files of the particular course. While it may look like the response is in plaintext, the actual file_url is encrypted. </p>
+    <p class="m-3">I used the iOS app to capture the requests but decompiled their Android app to find a fitting method to decrypt this response. My first hint should've been the lack of said method. Surely the backend is the same for both the platforms?</p>
+    <p class="m-3">I pinned it to my poor reverse engineering skills and proceeded to investigate further.</p>
+    <p class="m-3">I wanted to clear my tracks before I did any experimental server requests so I started to delete the incriminating request headers. I didn't want my friend to get banned after all.</p>
+    <p class="m-3">Turns out you could remove them ALL. No I'm not kidding. Even the Authorization is completely OPTIONAL. And look what happens when you remove the headers stating you're an iOS user,</p>
+    <img src="pictures/decrypted.png" class="card-img-top" alt="..." width="2454">
+    
+    <p class="m-3">The server gives the response removing all the encryption! They probably haven't implemented it in their Android app ig. Okay so that turned out to be easy. Now to just repeat all these malicious server requests.</p>
+    <p class="m-3">Or wait, automate making the malicious requests and store the responses -></p>
+    <p class="card-text"><i><b>"Why spend 5 minutes solving a problem manually when you can spend 30 automating it?"</b></i></p>
+    <img src="pictures/script.png" class="card-img-top" alt="..." width="2454">
+    <p class="m-3">And another python script to download them all,</p>
+    <img src="pictures/script-two.png" class="card-img-top" alt="..." width="2454">
+    <p class="m-3">Brilliant! Now to just let this run and rip their entire server!</p>
+    <img src="pictures/network.png" class="card-img-top" alt="..." width="2454">
+    <p class="m-3">1TB and counting... There goes this month's FUP limit.</p>
+    
+    <p class="m-3">The end result is a hard drive full of educational videos!</p>
+    <img src="pictures/videos.png" class="card-img-top" alt="..." width="2454">
+    <p class="m-3">I really should be studying these...</p>
+    <br>
+    
+    <p class="card-text"><small class="text-muted">14th January, 2023.</small></p>
+  </div>
+  </div>
+  </div>
+</div>
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://use.fontawesome.com/29bf0f8fe9.js"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
+  </body>
+</html>
