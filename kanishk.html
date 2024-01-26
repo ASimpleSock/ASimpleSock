@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+html {
+  box-sizing: border-box;
+}
+*, *::before, *::after {
+  box-sizing: inherit;
+}
+
+body {
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-transform: uppercase;
+  text-align: center;
+  color: #040404;
+}
+.al_l {
+  text-align: left;
+}
+
+
+.paper {
+  background: #000000;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0)
+  opacity: 0;
+  animation: paper 2s linear forwards;
+}
+
+@keyframes paper {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.2) rotate(0deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(1450deg);
+  }
+}
+
+</style>
+
+</head>
+<body>
+
+  <div class="paper">
+    <img src="postcard.png" width="200px">
+  </div> 
+   
+
+
+</body>
+</html>
+
