@@ -14,8 +14,13 @@
   // scripts.js
 window.addEventListener("load", function () {
     const loader = document.querySelector(".preloader");
-    loader.className += " hidden"; // add the 'hidden' class to the preloader
-    document.body.classList.add("loaded"); // add 'loaded' class to body
+   
+    setTimeout(function() {
+        loader.className += " hidden"; // add the 'hidden' class to the preloader
+        document.body.classList.add("loaded"); // add 'loaded' class to body
+    },850); // 3000 milliseconds = 3 seconds
+
+
 });
 
 
