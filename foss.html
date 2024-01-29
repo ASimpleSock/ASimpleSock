@@ -10,6 +10,15 @@
   gtag('js', new Date());
 
   gtag('config', 'G-JCMNFCVKM0');
+
+  // scripts.js
+window.addEventListener("load", function () {
+    const loader = document.querySelector(".preloader");
+    loader.className += " hidden"; // add the 'hidden' class to the preloader
+    document.body.classList.add("loaded"); // add 'loaded' class to body
+});
+
+
 </script>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
@@ -27,6 +36,129 @@
       .ubuntu { font-family: 'Ubuntu', sans-serif }
       .list { font-family: 'Ubuntu', sans-serif }
       .dates { color: #D3D3D3 }
+
+      /* styles.css */
+.preloader {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #fff; /* Background color of the preloader */
+    z-index: 9999; /* Ensure it appears above other elements */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.loader{
+    width: 150px;
+    height: 150px;
+    margin: 50px auto 0;
+    position: relative;
+}
+.loader .cube-wrapper{
+    transform-style: preserve-3d;
+    animation: bouncing 2s infinite;
+}
+.loader .cube{
+    transform-style: preserve-3d;
+    transform: rotateX(45deg) rotateZ(45deg);
+    animation: rotation 2s infinite;
+}
+.loader .cube-faces{
+    transform-style: preserve-3d;
+    height: 80px;
+    width: 80px;
+    position: relative;
+    transform-origin: 0 0;
+    transform: translateX(0) translateY(0) translateZ(-40px);
+}
+.loader .cube-face{
+    position: absolute;
+    inset: 0;
+    background: #110d31ff;
+    border: solid 1px #fff;
+}
+.loader .cube-face.shadow{
+    transform: translateZ(-80px);
+    animation: bouncing-shadow 2s infinite;
+}
+.loader .cube-face.top{ transform: translateZ(80px); }
+.loader .cube-face.front{
+    transform-origin: 0 50%;
+    transform: rotateY(-90deg);
+}
+.loader .cube-face.back{
+    transform-origin: 0 50%;
+    transform: rotateY(-90deg) translateZ(-80px);
+}
+.loader .cube-face.right{
+    transform-origin: 50% 0;
+    transform: rotateX(-90deg) translateY(-80px);
+}
+.loader .cube-face.left{
+    transform-origin: 50% 0;
+    transform: rotateX(-90deg) translateY(-80px) translateZ(80px);
+}
+@keyframes rotation{
+    0%{
+        transform: rotateX(45deg) rotateY(0) rotateZ(45deg);
+        animation-timing-function: cubic-bezier(0.17, 0.84, 0.44, 1);
+    }
+    50%{
+        transform: rotateX(45deg) rotateY(0) rotateZ(225deg);
+        animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
+    }
+    100%{
+        transform: rotateX(45deg) rotateY(0) rotateZ(405deg);
+        animation-timing-function: cubic-bezier(0.17, 0.84, 0.44, 1);
+    }
+}
+@keyframes bouncing{
+    0%{
+        transform: translateY(-40px);
+        animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
+    }
+    45%{
+        transform: translateY(40px);
+        animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    100%{
+        transform: translateY(-40px);
+        animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
+    }
+}
+@keyframes bouncing-shadow{
+    0%{
+        transform: translateZ(-80px) scale(1.3);
+        animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
+        opacity: 0.05;
+    }
+    45%{
+        transform: translateZ(0);
+        animation-timing-function: cubic-bezier(0.23, 1, 0.32, 1);
+        opacity: 0.3;
+    }
+    100%{
+        transform: translateZ(-80px) scale(1.3);
+        animation-timing-function: cubic-bezier(0.76, 0.05, 0.86, 0.06);
+        opacity: 0.05;
+    }
+}
+
+
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Optional: Hide the preloader when content is loaded */
+body.loaded .preloader {
+    display: none;
+}
+
 
     </style>
   </head>
@@ -56,50 +188,74 @@
 <br>
 
 
-<div class="row row-cols-3 g-3 gap-3">
+<div class="preloader">
+  <!-- Your preloader animation or image goes here -->
+  <div class="loader">
+    <div class="cube-wrapper">
+        <div class="cube">
+            <div class="cube-faces">
+            <div class="cube-face shadow"></div>
+            <div class="cube-face bottom"></div>
+            <div class="cube-face top"></div>
+            <div class="cube-face left"></div>
+            <div class="cube-face right"></div>
+            <div class="cube-face back"></div>
+            <div class="cube-face front"></div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<!-- Your website content goes here -->
+<div id="content">
+  <div class="row row-cols-3 g-3 gap-3">
     
-      <div class="col">
-        <a href="https://sonarr.asimplesock.com">
-            <div class="p-2 ml-2 mt-2">
-                <img src="pictures/sonarr.svg" class="img-fluid" card-img-top />
-              </div>
-        </a>
-      </div>
-      <div class="col">
-        <a href="https://jellyfin.asimplesock.com">
-            <div class="p-1 mt-1">
-                <img src="pictures/jellyfin.svg" class="img-fluid" card-img-top />
-              </div>
-        </a>
-      </div>
-      <div class="col">
-        <a href="https://prowlarr.asimplesock.com">
-            <div class="p-2 mr-2 mt-2">
-                <img src="pictures/prowlarr.svg" class="img-fluid" card-img-top />
-              </div>
-        </a>
-      </div>
-      <div class="col">
-        <a href="https://radarr.asimplesock.com">
-            <div class="p-2 ml-2 mt-2">
-                <img src="pictures/radarr.svg" class="img-fluid" card-img-top />
-              </div>
-        </a>
-      </div>
-      <div class="col">
-        <a href="https://home.asimplesock.com">
-            <div class="p-1 mb-1">
-                <img src="pictures/hassio.svg" class="img-fluid" card-img-top />
-              </div>
-        </a>
-      </div><div class="col">
-        <a href="https://immich.asimplesock.com">
-            <div class="p-1 mr-2 mt-2">
-                <img src="pictures/immich.png" class="img-fluid" card-img-top />
-              </div>
-        </a>
-      </div>
-  </div>
+    <div class="col">
+      <a href="https://sonarr.asimplesock.com">
+          <div class="p-2 ml-2 mt-2">
+              <img src="pictures/sonarr.svg" class="img-fluid" card-img-top />
+            </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="https://jellyfin.asimplesock.com">
+          <div class="p-1 mt-1">
+              <img src="pictures/jellyfin.svg" class="img-fluid" card-img-top />
+            </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="https://prowlarr.asimplesock.com">
+          <div class="p-2 mr-2 mt-2">
+              <img src="pictures/prowlarr.svg" class="img-fluid" card-img-top />
+            </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="https://radarr.asimplesock.com">
+          <div class="p-2 ml-2 mt-2">
+              <img src="pictures/radarr.svg" class="img-fluid" card-img-top />
+            </div>
+      </a>
+    </div>
+    <div class="col">
+      <a href="https://home.asimplesock.com">
+          <div class="p-1 mb-1">
+              <img src="pictures/hassio.svg" class="img-fluid" card-img-top />
+            </div>
+      </a>
+    </div><div class="col">
+      <a href="https://immich.asimplesock.com">
+          <div class="p-1 mr-2 mt-2">
+              <img src="pictures/immich.png" class="img-fluid" card-img-top />
+            </div>
+      </a>
+    </div>
+</div>
+</div>
+
+
 
 
 </div>
