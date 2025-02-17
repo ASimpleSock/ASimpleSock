@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Side-by-Side Iframes</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+        }
+        .iframe-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 50%;
+        }
+        iframe {
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+        }
+        h2 {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="iframe-container">
+        <h2><a href=https://joyfin.asimplesock.com>Singapore</a></h2>
+        <iframe src="https://fast.asimplesock.com"></iframe>
+    </div>
+    <div class="iframe-container">
+        <h2><a href=https://joyflare.asimplesock.com>India</a></h2>
+        <iframe src="https://speed.asimplesock.com"></iframe>
+    </div>
+</div>
+
+<div class="container">
+    <h2>Best is always the <a href=https://joyflix.asimplesock.com>direct IPv6 connection</a> (IPv6 required, test <a href=https://test-ipv6.com>here.</a>)</h2>
+</div>
+
+</body>
+</html>
